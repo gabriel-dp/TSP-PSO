@@ -24,7 +24,7 @@ std::vector<City> getAllCities() {
 
 int main() {
     std::vector<City> cities = getAllCities();
-    generateCompleteGraph(cities).print();
+    PSO pso = PSO(generateCompleteGraph(cities), 1, 10);
 
     return 0;
 }

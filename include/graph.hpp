@@ -2,8 +2,8 @@
 #define GRAPH_H
 
 #include <iostream>
-#include <map>
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 #define INVALID_LENGTH 0
@@ -13,15 +13,23 @@ typedef int Vertex;
 typedef double Length;
 typedef std::tuple<Vertex, Vertex, Length> Edge;
 
+// Works like a two-dimesion matrix, but mapping the values
+// Complexity of insert, search and delete are O(1)
+// Complexity of space is O(V(V-1)/2)
+typedef std::unordered_map<Vertex, std::unordered_map<Vertex, Length>> EdgesType;
+
 // Set of vertexes
 class VertexGroup {
    private:
-    // Avoids repeating a vertex
-    std::set<Vertex> vertexes;
+    std::set<Vertex> vertexes;  // Avoids repeating a vertex
 
    public:
     std::set<Vertex> getVertexes() {
         return vertexes;
+    }
+
+    std::vector<Vertex> getVertexesVector() {
+        return std::vector(vertexes.begin(), vertexes.end());
     }
 
     void insert(Vertex v) {
@@ -50,8 +58,7 @@ class VertexGroup {
 // Non-directional edges
 class EdgeGroup {
    private:
-    // Works like a two-dimesion matrix
-    std::map<Vertex, std::map<Vertex, Length>> edges;
+    EdgesType edges;
 
     // Orders two vertexes based on deterministic criteria
     std::pair<Vertex, Vertex> vertexes(Vertex v1, Vertex v2) {
@@ -59,8 +66,12 @@ class EdgeGroup {
     }
 
    public:
-    // Converts the matrix into a vector of edges
-    std::vector<Edge> getEdges() {
+    EdgesType getEdges() {
+        return edges;
+    }
+
+    // Converts the mapping list into a vector of edges
+    std::vector<Edge> getEdgesVector() {
         std::vector<Edge> edgesVector;
         for (auto firstVertex : edges) {
             for (auto secondVertex : firstVertex.second) {
@@ -105,9 +116,67 @@ class EdgeGroup {
     }
 
     void print() {
-        for (Edge e : getEdges()) {
+        for (Edge e : getEdgesVector()) {
             std::cout << std::get<0>(e) << " <-> " << std::get<1>(e) << " (" << std::get<2>(e) << ")\n";
         }
+    }
+};
+
+class Path {
+   private:
+    std::vector<Vertex> vertexes;
+    Length cost = -1;
+
+   public:
+    std::vector<Vertex> getVertexes() {
+        return vertexes;
+    }
+
+    Length getCost() {
+        return cost;
+    }
+
+    void insert(Vertex v) {
+        vertexes.push_back(v);
+    }
+
+    void swap(int index1, int index2, EdgeGroup edges) {
+        // Check if swap is valid
+        if (index1 < 0 || index2 < 0 || vertexes.size() - 1 < index1 || vertexes.size() - 1 < index2) {
+            return;
+        }
+
+        Vertex aux = vertexes[index1];
+        vertexes[index1] = vertexes[index2];
+        vertexes[index2] = aux;
+
+        calculateCost(edges);
+    }
+
+    Length calculateCost(EdgeGroup edges) {
+        if (vertexes.empty()) {
+            cost = -1;
+        } else {
+            cost = 0;
+            for (auto i = vertexes.begin(); std::next(i) != vertexes.end(); i++) {
+                cost += edges.getLength(*i, *std::next(i));
+            }
+            cost += edges.getLength(*vertexes.rbegin(), *vertexes.begin());
+        }
+
+        return getCost();
+    }
+
+    void print() {
+        if (vertexes.empty()) {
+            std::cout << "Empty path\n";
+            return;
+        }
+
+        for (Vertex v : vertexes) {
+            std::cout << v << " -> ";
+        }
+        std::cout << vertexes.at(0) << " (" << cost << ")\n";
     }
 };
 
@@ -118,12 +187,12 @@ class Graph {
     EdgeGroup edges;
 
    public:
-    std::set<Vertex> getVertexes() {
-        return vertexes.getVertexes();
+    VertexGroup getVertexes() {
+        return vertexes;
     }
 
-    std::vector<Edge> getEdges() {
-        return edges.getEdges();
+    EdgeGroup getEdges() {
+        return edges;
     }
 
     void addVertex(Vertex v) {
