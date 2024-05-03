@@ -128,11 +128,14 @@ class Path {
     Length cost = -1;
 
    public:
-    std::vector<Vertex> getVertexes() {
+    Path() {}
+    Path(const Path& copy) : vertexes(copy.getVertexes()), cost(copy.getCost()) {}
+
+    const std::vector<Vertex>& getVertexes() const {
         return vertexes;
     }
 
-    Length getCost() {
+    Length getCost() const {
         return cost;
     }
 
@@ -142,7 +145,8 @@ class Path {
 
     void swap(int index1, int index2, EdgeGroup edges) {
         // Check if swap is valid
-        if (index1 < 0 || index2 < 0 || vertexes.size() - 1 < index1 || vertexes.size() - 1 < index2) {
+        int size = (int)vertexes.size();
+        if (index1 < 0 || index2 < 0 || size - 1 < index1 || size - 1 < index2) {
             return;
         }
 

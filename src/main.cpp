@@ -24,7 +24,8 @@ std::vector<City> getAllCities() {
 
 int main() {
     std::vector<City> cities = getAllCities();
-    PSO pso = PSO(generateCompleteGraph(cities), 1, 10);
+    PSO tsp = PSO(generateCompleteGraph(cities), 10, 1);
+    tsp.getBestGlobalParticle()->getPersonalBestPath().print();
 
     return 0;
 }
