@@ -8,6 +8,7 @@
 #include <vector>
 
 #define INVALID_LENGTH 0
+#define INVALID_PATH_LENGTH -1
 
 // Base graph types
 typedef int Vertex;
@@ -46,7 +47,7 @@ class VertexGroup {
     }
 
     int length() {
-        return vertexes.size();
+        return (int)vertexes.size();
     }
 
     void clear() {
@@ -65,7 +66,7 @@ class EdgeGroup {
    private:
     EdgesType edges;
 
-    // Orders two vertexes based on deterministic criteria
+    // Sorts two vertexes based on deterministic criteria
     std::pair<Vertex, Vertex> vertexes(Vertex v1, Vertex v2) {
         return std::pair(std::min(v1, v2), std::max(v1, v2));
     }
@@ -127,6 +128,37 @@ class EdgeGroup {
     }
 };
 
+// Non-directional graph
+class Graph {
+   private:
+    VertexGroup vertexes;
+    EdgeGroup edges;
+
+   public:
+    VertexGroup& getVertexes() {
+        return vertexes;
+    }
+
+    EdgeGroup& getEdges() {
+        return edges;
+    }
+
+    void addVertex(Vertex v) {
+        vertexes.insert(v);
+    }
+
+    void addEdge(Vertex v1, Vertex v2, Length length) {
+        addVertex(v1);
+        addVertex(v2);
+        edges.insert(v1, v2, length);
+    }
+
+    void print() {
+        vertexes.print();
+        edges.print();
+    }
+};
+
 class Path {
    private:
     std::vector<Vertex> vertexes;
@@ -151,7 +183,7 @@ class Path {
         vertexes.push_back(v);
     }
 
-    void swap(int index1, int index2, EdgeGroup edges) {
+    void swap(int index1, int index2, EdgeGroup& edges) {
         // Check if swap is valid
         int size = (int)vertexes.size();
         if (index1 < 0 || index2 < 0 || size - 1 < index1 || size - 1 < index2) {
@@ -167,12 +199,13 @@ class Path {
 
     int getPosition(Vertex v) {
         auto foundIt = std::find(vertexes.begin(), vertexes.end(), v);
-        return foundIt - vertexes.begin();
+        int position = foundIt - vertexes.begin();
+        return position;
     }
 
-    Length calculateCost(EdgeGroup edges) {
+    Length calculateCost(EdgeGroup& edges) {
         if (vertexes.empty()) {
-            cost = -1;
+            cost = INVALID_PATH_LENGTH;
         } else {
             cost = 0;
             for (auto i = vertexes.begin(); std::next(i) != vertexes.end(); i++) {
@@ -181,7 +214,7 @@ class Path {
             cost += edges.getLength(*vertexes.rbegin(), *vertexes.begin());
         }
 
-        return getCost();
+        return cost;
     }
 
     void print() {
@@ -194,41 +227,6 @@ class Path {
             std::cout << v << " -> ";
         }
         std::cout << vertexes.at(0) << " (" << cost << ")\n";
-    }
-};
-
-// Non-directional graph
-class Graph {
-   private:
-    VertexGroup vertexes;
-    EdgeGroup edges;
-
-   public:
-    VertexGroup getVertexes() {
-        return vertexes;
-    }
-
-    EdgeGroup getEdges() {
-        return edges;
-    }
-
-    void addVertex(Vertex v) {
-        vertexes.insert(v);
-    }
-
-    void addEdge(Vertex v1, Vertex v2, Length length) {
-        addVertex(v1);
-        addVertex(v2);
-        edges.insert(v1, v2, length);
-    }
-
-    Length edgeLength(Vertex v1, Vertex v2) {
-        return edges.getLength(v1, v2);
-    }
-
-    void print() {
-        vertexes.print();
-        edges.print();
     }
 };
 

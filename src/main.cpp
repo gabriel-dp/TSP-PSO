@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../include/pso_tsp.hpp"
+#include "../include/pso.hpp"
+#include "../include/tsp.hpp"
 
 std::vector<City> getAllCities() {
     std::vector<City> cities;
@@ -24,7 +25,7 @@ std::vector<City> getAllCities() {
 
 int main() {
     std::vector<City> cities = getAllCities();
-    PSO tsp = PSO(generateCompleteGraph(cities), 20, 20);
+    PSO tsp = PSO(generateCompleteGraph(cities), 100, 10);
     tsp.printAllParticles();
     tsp.getBestGlobalParticle()->getPersonalBestPath().print();
 
