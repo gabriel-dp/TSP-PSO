@@ -1,6 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <algorithm>
 #include <iostream>
 #include <set>
 #include <unordered_map>
@@ -42,6 +43,10 @@ class VertexGroup {
 
     bool exists(Vertex v) {
         return vertexes.find(v) != vertexes.end();
+    }
+
+    int length() {
+        return vertexes.size();
     }
 
     void clear() {
@@ -129,7 +134,10 @@ class Path {
 
    public:
     Path() {}
-    Path(const Path& copy) : vertexes(copy.getVertexes()), cost(copy.getCost()) {}
+    Path(const Path& copy) {
+        this->vertexes = std::vector(copy.getVertexes());
+        this->cost = copy.getCost();
+    }
 
     const std::vector<Vertex>& getVertexes() const {
         return vertexes;
@@ -155,6 +163,11 @@ class Path {
         vertexes[index2] = aux;
 
         calculateCost(edges);
+    }
+
+    int getPosition(Vertex v) {
+        auto foundIt = std::find(vertexes.begin(), vertexes.end(), v);
+        return foundIt - vertexes.begin();
     }
 
     Length calculateCost(EdgeGroup edges) {
