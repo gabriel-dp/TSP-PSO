@@ -4,14 +4,16 @@
 #include "../include/pso.hpp"
 #include "../include/tsp.hpp"
 
-std::vector<City> getAllCities() {
-    std::vector<City> cities;
+using namespace std;
+
+vector<City> getAllCities() {
+    vector<City> cities;
     int n;
     Coordinate x, y;
 
-    std::cin >> n;
+    cin >> n;
     for (int i = 0; i < n; i++) {
-        std::cin >> x >> y;
+        cin >> x >> y;
 
         City newCity;
         newCity.vertex = i + 1;
@@ -24,10 +26,10 @@ std::vector<City> getAllCities() {
 }
 
 int main() {
-    std::vector<City> cities = getAllCities();
-    PSO tsp = PSO(generateCompleteGraph(cities), 100, 10);
+    vector<City> cities = getAllCities();
+    PSO tsp = PSO(generateCompleteGraph(cities), 12, 10);
     tsp.printAllParticles();
-    tsp.getBestGlobalParticle()->getPersonalBestPath().print();
+    tsp.getBestGlobalParticle()->personalBestPath.print();
 
     return 0;
 }

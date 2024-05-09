@@ -3,13 +3,14 @@
 
 #include <algorithm>
 #include <iostream>
-#include <random>
 #include <vector>
 
 #include "graph.hpp"
+#include "random.hpp"
 
-double randomZeroToOne();
+using namespace std;
 
+// Swap operators works like a "swap request"
 typedef struct {
     Vertex vertex;
     int indexOrigin, indexCorrect;
@@ -18,10 +19,10 @@ typedef struct {
 
 class Velocity {
    private:
-    std::vector<SwapOperator> swapOperators;
+    vector<SwapOperator> swapOperators;
 
    public:
-    std::vector<SwapOperator> getSwapOperators() {
+    vector<SwapOperator> getSwapOperators() {
         return swapOperators;
     }
 
@@ -41,31 +42,17 @@ class Velocity {
 };
 
 class Particle {
-   private:
+   public:
     Path actualPath, personalBestPath;
     Velocity velocity;
-
-   public:
     Particle(Path path) : actualPath(path), personalBestPath(Path(path)) {}
 
-    Path& getActualPath() {
-        return actualPath;
-    }
-
-    Path& getPersonalBestPath() {
-        return personalBestPath;
-    }
-
-    Velocity& getVelocity() {
-        return velocity;
-    }
-
     static bool comparePersonalBestCost(Particle& a, Particle& b) {
-        return a.getPersonalBestPath().getCost() < b.getPersonalBestPath().getCost();
+        return a.personalBestPath.getCost() < b.personalBestPath.getCost();
     }
 
     static bool compareActualCost(Particle& a, Particle& b) {
-        return a.getActualPath().getCost() < b.getActualPath().getCost();
+        return a.actualPath.getCost() < b.actualPath.getCost();
     }
 
     void swap(int index1, int index2, EdgeGroup& edges) {
@@ -74,67 +61,30 @@ class Particle {
             personalBestPath = actualPath;
         }
     }
-
-    void calculateVelocity(Path& gbest, double c1, double c2) {
-        velocity.reset();
-
-        for (int i = 0; i < (int)actualPath.getVertexes().size(); i++) {
-            Vertex particleVertexAtIndex = actualPath.getVertexes().at(i);
-
-            // Personal best swaps
-            Vertex pbestVertexAtIndex = personalBestPath.getVertexes().at(i);
-            Vertex pbestVertexCorrectIndex = actualPath.getPosition(pbestVertexAtIndex);
-            if (particleVertexAtIndex != pbestVertexAtIndex) {
-                velocity.insert(pbestVertexAtIndex, i, pbestVertexCorrectIndex, c1);
-            }
-
-            // Global best swaps
-            Vertex gbestVertexAtIndex = gbest.getVertexes().at(i);
-            Vertex gbestVertexCorrectIndex = actualPath.getPosition(gbestVertexAtIndex);
-            if (particleVertexAtIndex != gbestVertexAtIndex) {
-                velocity.insert(gbestVertexAtIndex, gbestVertexCorrectIndex, i, c2);
-            }
-        }
-    }
-
-    void makeSwaps(EdgeGroup& edges) {
-        for (SwapOperator& swapOperator : velocity.getSwapOperators()) {
-            // Calculates the swap probability using the coefficient
-            bool isPossible = randomZeroToOne() < swapOperator.coefficient;
-
-            // Checks if the vertex is already on its correct position
-            bool isNecessary = actualPath.getVertexes().at(swapOperator.indexCorrect) != swapOperator.vertex;
-
-            if (isPossible && isNecessary) {
-                swap(swapOperator.indexOrigin, swapOperator.indexCorrect, edges);
-            }
-        }
-
-        // Avoids repeating same swaps
-        velocity.reset();
-    }
 };
+
+// Essential functions
+void updateVelocity(Particle& particle, Path& gbest, double c1, double c2);
+void makeSwaps(Particle& particle, EdgeGroup& edges);
 
 class PSO {
    private:
     Graph graph;
     int iterations = 0;
     int populationSize = 0;
-    std::vector<Particle> particles;
+    vector<Particle> particles;
 
     const double c1 = 0.5;
     const double c2 = 0.5;
 
-    std::vector<Path> generateRandomPaths(std::vector<Vertex>& vertexes, int quantity) {
-        std::vector<Path> paths;
+    vector<Path> generateRandomPaths(vector<Vertex>& vertexes, int quantity) {
+        vector<Path> paths;
 
-        // Obtains a random seed
-        std::random_device rd;
-        std::mt19937 seed(rd());
+        mt19937 seed = randomSeed();
 
         // Creates all random paths considering the graph is complete
         while (quantity--) {
-            std::shuffle(vertexes.begin(), vertexes.end(), seed);
+            shuffle(vertexes.begin(), vertexes.end(), seed);
 
             Path newPath = Path();
             for (Vertex v : vertexes) {
@@ -152,10 +102,10 @@ class PSO {
         for (int i = 0; i < iterations; i++) {
             printAllParticles();
 
-            Path gbest = getBestGlobalParticle()->getPersonalBestPath();
+            Path gbest = getBestGlobalParticle()->personalBestPath;
             for (Particle& particle : particles) {
-                particle.calculateVelocity(gbest, c1, c2);
-                particle.makeSwaps(graph.getEdges());
+                updateVelocity(particle, gbest, c1, c2);
+                makeSwaps(particle, graph.getEdges());
             }
         }
     }
@@ -166,8 +116,8 @@ class PSO {
         this->iterations = iterations;
 
         // Creates the particles using random paths
-        std::vector<Vertex> vertexes = graph.getVertexes().getVertexesVector();
-        std::vector<Path> randomPaths = generateRandomPaths(vertexes, populationSize);
+        vector<Vertex> vertexes = graph.getVertexes().getVertexesVector();
+        vector<Path> randomPaths = generateRandomPaths(vertexes, populationSize);
         for (Path& path : randomPaths) {
             particles.push_back(Particle(path));
         }
@@ -176,15 +126,15 @@ class PSO {
     }
 
     Particle* getBestGlobalParticle() {
-        return &(*std::min_element(particles.begin(), particles.end(), Particle::comparePersonalBestCost));
+        return &(*min_element(particles.begin(), particles.end(), Particle::comparePersonalBestCost));
     }
 
     void printAllParticles() {
-        std::cout << "All particles: \n";
+        cout << "All particles: \n";
         for (Particle& p : particles) {
-            p.getActualPath().print();
+            p.actualPath.print();
         }
-        std::cout << "\n";
+        cout << "\n";
     }
 };
 

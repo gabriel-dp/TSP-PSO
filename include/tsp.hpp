@@ -3,11 +3,13 @@
 
 #include <vector>
 
+using namespace std;
+
 #include "graph.hpp"
 
 // Base problem types
 typedef double Coordinate;
-typedef std::pair<Coordinate, Coordinate> Coordinates;
+typedef pair<Coordinate, Coordinate> Coordinates;
 typedef struct {
     Vertex vertex;
     Coordinates position;
@@ -15,6 +17,6 @@ typedef struct {
 
 // Essential functions
 double calculateDistance(Coordinates coords1, Coordinates coords2);
-Graph generateCompleteGraph(std::vector<City>& cities);
+Graph generateCompleteGraph(vector<City>& cities);
 
 #endif

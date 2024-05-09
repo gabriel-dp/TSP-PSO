@@ -7,31 +7,33 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace std;
+
 #define INVALID_LENGTH 0
 #define INVALID_PATH_LENGTH -1
 
 // Base graph types
 typedef int Vertex;
 typedef double Length;
-typedef std::tuple<Vertex, Vertex, Length> Edge;
+typedef tuple<Vertex, Vertex, Length> Edge;
 
 // Works like a two-dimesion matrix, but mapping the values
 // Complexity of insert, search and delete are O(1)
 // Complexity of space is O(V(V-1)/2)
-typedef std::unordered_map<Vertex, std::unordered_map<Vertex, Length>> EdgesType;
+typedef unordered_map<Vertex, unordered_map<Vertex, Length>> EdgesType;
 
 // Set of vertexes
 class VertexGroup {
    private:
-    std::set<Vertex> vertexes;  // Avoids repeating a vertex
+    set<Vertex> vertexes;  // Avoids repeating a vertex
 
    public:
-    std::set<Vertex> getVertexes() {
+    set<Vertex> getVertexes() {
         return vertexes;
     }
 
-    std::vector<Vertex> getVertexesVector() {
-        return std::vector(vertexes.begin(), vertexes.end());
+    vector<Vertex> getVertexesVector() {
+        return vector(vertexes.begin(), vertexes.end());
     }
 
     void insert(Vertex v) {
@@ -56,7 +58,7 @@ class VertexGroup {
 
     void print() {
         for (Vertex v : vertexes) {
-            std::cout << v << "\n";
+            cout << v << "\n";
         }
     }
 };
@@ -67,8 +69,8 @@ class EdgeGroup {
     EdgesType edges;
 
     // Sorts two vertexes based on deterministic criteria
-    std::pair<Vertex, Vertex> vertexes(Vertex v1, Vertex v2) {
-        return std::pair(std::min(v1, v2), std::max(v1, v2));
+    pair<Vertex, Vertex> vertexes(Vertex v1, Vertex v2) {
+        return pair(min(v1, v2), max(v1, v2));
     }
 
    public:
@@ -77,11 +79,11 @@ class EdgeGroup {
     }
 
     // Converts the mapping list into a vector of edges
-    std::vector<Edge> getEdgesVector() {
-        std::vector<Edge> edgesVector;
+    vector<Edge> getEdgesVector() {
+        vector<Edge> edgesVector;
         for (auto firstVertex : edges) {
             for (auto secondVertex : firstVertex.second) {
-                Edge newEdge = std::tuple(firstVertex.first, secondVertex.first, secondVertex.second);
+                Edge newEdge = tuple(firstVertex.first, secondVertex.first, secondVertex.second);
                 edgesVector.push_back(newEdge);
             }
         }
@@ -123,7 +125,7 @@ class EdgeGroup {
 
     void print() {
         for (Edge e : getEdgesVector()) {
-            std::cout << std::get<0>(e) << " <-> " << std::get<1>(e) << " (" << std::get<2>(e) << ")\n";
+            cout << get<0>(e) << " <-> " << get<1>(e) << " (" << get<2>(e) << ")\n";
         }
     }
 };
@@ -161,17 +163,17 @@ class Graph {
 
 class Path {
    private:
-    std::vector<Vertex> vertexes;
+    vector<Vertex> vertexes;
     Length cost = -1;
 
    public:
     Path() {}
     Path(const Path& copy) {
-        this->vertexes = std::vector(copy.getVertexes());
+        this->vertexes = vector(copy.getVertexes());
         this->cost = copy.getCost();
     }
 
-    const std::vector<Vertex>& getVertexes() const {
+    const vector<Vertex>& getVertexes() const {
         return vertexes;
     }
 
@@ -198,7 +200,7 @@ class Path {
     }
 
     int getPosition(Vertex v) {
-        auto foundIt = std::find(vertexes.begin(), vertexes.end(), v);
+        auto foundIt = find(vertexes.begin(), vertexes.end(), v);
         int position = foundIt - vertexes.begin();
         return position;
     }
@@ -208,8 +210,8 @@ class Path {
             cost = INVALID_PATH_LENGTH;
         } else {
             cost = 0;
-            for (auto i = vertexes.begin(); std::next(i) != vertexes.end(); i++) {
-                cost += edges.getLength(*i, *std::next(i));
+            for (auto i = vertexes.begin(); next(i) != vertexes.end(); i++) {
+                cost += edges.getLength(*i, *next(i));
             }
             cost += edges.getLength(*vertexes.rbegin(), *vertexes.begin());
         }
@@ -219,14 +221,14 @@ class Path {
 
     void print() {
         if (vertexes.empty()) {
-            std::cout << "Empty path\n";
+            cout << "Empty path\n";
             return;
         }
 
         for (Vertex v : vertexes) {
-            std::cout << v << " -> ";
+            cout << v << " -> ";
         }
-        std::cout << vertexes.at(0) << " (" << cost << ")\n";
+        cout << vertexes.at(0) << " (" << cost << ")\n";
     }
 };
 
