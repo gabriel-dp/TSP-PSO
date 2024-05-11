@@ -75,7 +75,7 @@ class PSO {
     vector<Particle> particles;
 
     const double c1 = 0.5;
-    const double c2 = 0.5;
+    const double c2 = 0.75;
 
     vector<Path> generateRandomPaths(vector<Vertex>& vertexes, int quantity) {
         vector<Path> paths;
@@ -100,8 +100,6 @@ class PSO {
 
     void run() {
         for (int i = 0; i < iterations; i++) {
-            printAllParticles();
-
             Path gbest = getBestGlobalParticle()->personalBestPath;
             for (Particle& particle : particles) {
                 updateVelocity(particle, gbest, c1, c2);

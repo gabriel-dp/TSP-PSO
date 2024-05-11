@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 
+#include "../include/plot.hpp"
 #include "../include/pso.hpp"
 #include "../include/tsp.hpp"
 
@@ -16,7 +17,7 @@ vector<City> getAllCities() {
         cin >> x >> y;
 
         City newCity;
-        newCity.vertex = i + 1;
+        newCity.vertex = i;
         newCity.position = std::pair(x, y);
 
         cities.push_back(newCity);
@@ -27,9 +28,9 @@ vector<City> getAllCities() {
 
 int main() {
     vector<City> cities = getAllCities();
-    PSO tsp = PSO(generateCompleteGraph(cities), 12, 10);
-    tsp.printAllParticles();
+    PSO tsp = PSO(generateCompleteGraph(cities), 100, 15);
     tsp.getBestGlobalParticle()->personalBestPath.print();
+    plotGraph(cities, tsp.getBestGlobalParticle()->personalBestPath);
 
     return 0;
 }

@@ -14,7 +14,7 @@ SRCDIR := src
 CXXFLAGS := -Wall -I $(INCDIR)
 
 # Linker flags
-LDFLAGS := -lm
+LDFLAGS := -lm -lSDL2main -lSDL2 
 
 # %.o file names
 NAMES := $(notdir $(basename $(wildcard $(SRCDIR)/*.cpp)))
