@@ -75,7 +75,7 @@ class PSO {
     vector<Particle> particles;
 
     const double c1 = 0.5;
-    const double c2 = 0.5;
+    const double c2 = 0.8;
 
     vector<Path> generateRandomPaths(vector<Vertex>& vertexes, int quantity) {
         vector<Path> paths;
