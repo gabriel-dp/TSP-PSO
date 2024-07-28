@@ -1,8 +1,6 @@
-# Travelling Salesman Problem using Particle Swarm Optimization
+# Artificial Intelligence - Travelling Salesman Problem using Particle Swarm Optimization
 
-&nbsp;
-
-```c
+```cpp
 #define SUBJECT "Inteligência Artificial"
 #define WORK "Trabalho Prático 1"
 #define PROFESSOR "Edimilson Batista"
@@ -42,7 +40,7 @@ To run the program you need to provide the integer number N of cities, and then 
 ```
 
 ---
-Alternatively, you can run the program with an text file:
+Alternatively, you can run the program with a text file:
 
 ```bash
 ./bin/out < {inputPath}
