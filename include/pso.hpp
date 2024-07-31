@@ -74,8 +74,8 @@ class PSO {
     int populationSize = 0;
     vector<Particle> particles;
 
-    const double c1 = 0.5;
-    const double c2 = 0.8;
+    double c1 = 0;
+    double c2 = 0;
 
     vector<Path> generateRandomPaths(vector<Vertex>& vertexes, int quantity) {
         vector<Path> paths;
@@ -100,7 +100,7 @@ class PSO {
 
     void run() {
         for (int i = 0; i < iterations; i++) {
-            printAllParticles();
+            //printAllParticles();
 
             Path gbest = getBestGlobalParticle()->personalBestPath;
             for (Particle& particle : particles) {
@@ -111,9 +111,11 @@ class PSO {
     }
 
    public:
-    PSO(Graph graph, int populationSize, int iterations) : graph(graph) {
+    PSO(Graph graph, int populationSize, int iterations, double c1, double c2) : graph(graph) {
         this->populationSize = populationSize;
         this->iterations = iterations;
+        this->c1 = c1;
+        this->c2 = c2;
 
         // Creates the particles using random paths
         vector<Vertex> vertexes = graph.getVertexes().getVertexesVector();
